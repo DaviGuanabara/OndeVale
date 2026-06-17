@@ -1,9 +1,9 @@
-# Render blueprint for the OndeVale application stack.
+# Render Blueprint for the OndeVale application stack.
 services:
   # Public FastAPI inference service.
   - type: web
     name: ondevale-api
-    env: python
+    runtime: python
     plan: free
     rootDir: .
     buildCommand: |
@@ -11,27 +11,29 @@ services:
       uv sync
     startCommand: |
       uv run uvicorn backend.app:app --host 0.0.0.0 --port $PORT
-    # A simple health route exists at GET /.
+    # The API exposes GET / as a health check endpoint.
     healthCheckPath: /
     envVars:
       - key: PYTHONUNBUFFERED
         value: "1"
-      # Allows the browser frontend to call the API from another origin.
+      # Allows the public frontend to call the API after deployment.
       - key: ONDEVALE_CORS_ORIGINS
         value: "*"
 
   # Public static frontend built with Vite and served by Render's CDN.
+  # In Render Blueprints, static sites use type=web with runtime=static.
+  # Static sites do not accept the same paid/free instance plan field as Python web services.
   - type: web
     name: ondevale-frontend
     runtime: static
-    plan: free
+    rootDir: frontend
     buildCommand: |
-      cd frontend
       npm install
       npm run build
-    staticPublishPath: ./frontend/dist
+    # Relative to rootDir=frontend, so the published output is frontend/dist.
+    staticPublishPath: ./dist
     envVars:
-      # Inject the backend host into the Vite build so the frontend knows where to send requests.
+      # Inject the backend host into the Vite build so the frontend can call the API.
       - key: VITE_API_BASE_URL
         fromService:
           name: ondevale-api

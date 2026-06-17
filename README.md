@@ -450,6 +450,32 @@ The repository contains a `render.yaml` blueprint that defines:
 
 The frontend receives the backend host through `VITE_API_BASE_URL` during deployment.
 
+## Render Deployment
+
+OndeVale can be deployed on Render from a single Blueprint without creating services manually.
+
+1. Push the repository to GitHub.
+2. Log in to Render.
+3. Click `New` and choose `Blueprint`.
+4. Select the repository that contains OndeVale.
+5. Review the detected `render.yaml` and apply the Blueprint.
+6. Wait for Render to build both services.
+7. Open the public `ondevale-frontend` URL and interact with the application.
+
+### Blueprint Services
+
+The Blueprint creates exactly two services:
+
+- `ondevale-api`
+- `ondevale-frontend`
+
+### Deployment Notes
+
+- `ondevale-api` is a Python web service that installs dependencies with `uv`, starts `uvicorn`, exposes `GET /` for health checks, and loads model artifacts directly from the repository.
+- `ondevale-frontend` is a Render static site built from `frontend/` and published from `frontend/dist`.
+- The frontend receives the backend host through `VITE_API_BASE_URL`, so the deployed UI points to the deployed API automatically.
+- `ONDEVALE_CORS_ORIGINS` is configured in the backend service and can be tightened later if a stricter production origin policy is desired.
+
 ## Repository Structure
 
 ```text
