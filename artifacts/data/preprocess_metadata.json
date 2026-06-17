@@ -1,0 +1,18 @@
+{
+  "raw_rows": 13640,
+  "scope_rows": 6412,
+  "rows_after_missing_filter": 6412,
+  "rows_after_invalid_geo_filter": 6014,
+  "removed_missing_required": 0,
+  "removed_invalid_zero_coordinates": 398,
+  "scope_decision": "Negotiation Type == 'sale'",
+  "required_columns": [
+    "Price",
+    "Size",
+    "Latitude",
+    "Longitude"
+  ],
+  "target_column": "price_m2",
+  "source_crs": "EPSG:4326",
+  "target_crs": "EPSG:31983"
+}

@@ -1,0 +1,12 @@
+{
+  "selection": "baseline",
+  "experiment": "B_metric_no_norm",
+  "feature_columns": [
+    "x",
+    "y"
+  ],
+  "use_scaler": false,
+  "k": 5,
+  "training_rows": 6014,
+  "target_column": "price_m2"
+}

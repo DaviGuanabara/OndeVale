@@ -1,0 +1,124 @@
+\documentclass[12pt]{report}
+
+%\usepackage[brazil]{babel} %remover quando for em inglês
+%\usepackage[latin1]{inputenc}  
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{graphicx}
+
+\usepackage{tabularx}
+\usepackage{array}
+
+
+
+
+\usepackage{svg}
+\usepackage{tikz}
+\usepackage{mathtools}
+\usetikzlibrary{calc,positioning}
+\usetikzlibrary{angles,quotes}
+
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+%\usepackage{url}
+\usepackage{hyperref}
+\usepackage{pgf}
+
+
+
+
+
+
+
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, shadows.blur}
+    
+
+\svgsetup{inkscapeexe=inkscape}
+
+\geometry{a4paper, margin=2.5cm}
+\setstretch{1.2}
+
+% =========================
+% Variáveis (tags)
+% =========================
+
+\newcommand{\student}[1]{\def\thestudent{#1}}
+\newcommand{\course}[1]{\def\thecourse{#1}}
+\newcommand{\coursename}[1]{\def\thecoursename{#1}}
+\newcommand{\professor}[1]{\def\theprofessor{#1}}
+\newcommand{\activitytype}[1]{\def\theactivitytype{#1}}
+\newcommand{\activitynumber}[1]{\def\theactivitynumber{#1}}
+
+% Defaults
+\student{Nome do Aluno}
+\course{Código}
+\coursename{Disciplina}
+\professor{Professor}
+\activitytype{Atividade}
+\activitynumber{X}
+
+% =========================
+% Cabeçalho bonito
+% =========================
+
+\newcommand{\makeheader}{
+\noindent
+\begin{center}
+
+\begin{tabular}{m{7cm} m{0.5\textwidth}}
+    % LOGO (centralizada verticalmente)
+    \centering
+    \includesvg[width=7cm]{ita-logo}
+    &
+    % TEXTO (centralizado verticalmente automaticamente)
+    \raggedright
+    \textbf{Instituto Tecnológico de Aeronáutica} \\
+    %Divisão de Ciência da Computação -- IEC \\
+    PG/EEC-I \\[0.3em]
+    
+    \textbf{\thecourse\ -- \thecoursename} \\
+    Professor: \theprofessor \\[0.5em]
+    
+    \textbf{\theactivitytype\ \theactivitynumber}
+\end{tabular}
+
+\end{center}
+
+\vspace{1cm}
+
+\noindent
+\textbf{Aluno:} \thestudent
+
+\vspace{0.5cm}
+\hrule
+\vspace{0.8cm}
+}
+
+
+
+\begin{document}
+% ===== CONFIG =====
+\student{Davi Guanabara de Aragão}
+\course{CM-204 2026}
+\coursename{Deep Learning}
+\professor{Marcos Máximo}
+\activitytype{Lab}
+\activitynumber{6: Recurrent Neural Networks}
+
+% ===== HEADER =====
+\makeheader
+
+
+
+
+
+
+\end{document}

@@ -1,0 +1,23 @@
+{
+  "overall_best": {
+    "experiment": "A_raw_no_norm",
+    "description": "Raw longitude/latitude in degrees without normalization.",
+    "feature_columns": "Longitude,Latitude",
+    "use_scaler": false,
+    "k": 5,
+    "mae_mean": 1133.521444879971,
+    "rmse_mean": 1874.4435336586587,
+    "r2_mean": 0.6540120038410839
+  },
+  "selected_baseline_model": {
+    "experiment": "B_metric_no_norm",
+    "description": "Projected metric coordinates without normalization.",
+    "feature_columns": "x,y",
+    "use_scaler": false,
+    "k": 5,
+    "mae_mean": 1136.840128693316,
+    "rmse_mean": 1875.1573789544059,
+    "r2_mean": 0.6538092612066124
+  },
+  "selection_rule": "The final baseline model must use metric coordinates [x, y]. Experiment A is kept as an ablation/comparison, but the deployed baseline is selected from experiments B and C only."
+}

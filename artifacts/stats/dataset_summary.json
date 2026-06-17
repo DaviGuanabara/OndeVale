@@ -1,0 +1,40 @@
+{
+  "num_rows": 13640,
+  "num_columns": 16,
+  "column_names": [
+    "Price",
+    "Condo",
+    "Size",
+    "Rooms",
+    "Toilets",
+    "Suites",
+    "Parking",
+    "Elevator",
+    "Furnished",
+    "Swimming Pool",
+    "New",
+    "District",
+    "Negotiation Type",
+    "Property Type",
+    "Latitude",
+    "Longitude"
+  ],
+  "dtypes": {
+    "Price": "int64",
+    "Condo": "int64",
+    "Size": "int64",
+    "Rooms": "int64",
+    "Toilets": "int64",
+    "Suites": "int64",
+    "Parking": "int64",
+    "Elevator": "int64",
+    "Furnished": "int64",
+    "Swimming Pool": "int64",
+    "New": "int64",
+    "District": "object",
+    "Negotiation Type": "object",
+    "Property Type": "object",
+    "Latitude": "float64",
+    "Longitude": "float64"
+  }
+}

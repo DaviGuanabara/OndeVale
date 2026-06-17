@@ -1,0 +1,25 @@
+experiment,description,feature_columns,use_scaler,k,mae_mean,rmse_mean,r2_mean
+A_raw_no_norm,Raw longitude/latitude in degrees without normalization.,"Longitude,Latitude",False,1,1228.3756815334189,2215.2414211284386,0.5141145166031922
+A_raw_no_norm,Raw longitude/latitude in degrees without normalization.,"Longitude,Latitude",False,3,1152.2906952182077,1922.250241516716,0.6356773565763314
+A_raw_no_norm,Raw longitude/latitude in degrees without normalization.,"Longitude,Latitude",False,5,1133.521444879971,1874.4435336586587,0.6540120038410839
+A_raw_no_norm,Raw longitude/latitude in degrees without normalization.,"Longitude,Latitude",False,7,1142.505226505794,1884.9912899339256,0.6502735488524068
+A_raw_no_norm,Raw longitude/latitude in degrees without normalization.,"Longitude,Latitude",False,9,1148.740369263945,1890.4529507002517,0.6484230595873349
+A_raw_no_norm,Raw longitude/latitude in degrees without normalization.,"Longitude,Latitude",False,11,1159.958677397381,1896.351182202914,0.6462278222905178
+A_raw_no_norm,Raw longitude/latitude in degrees without normalization.,"Longitude,Latitude",False,15,1173.379457401346,1893.5655358432446,0.6472955830176671
+A_raw_no_norm,Raw longitude/latitude in degrees without normalization.,"Longitude,Latitude",False,21,1187.7890140495451,1903.7894767240068,0.6434339952023824
+B_metric_no_norm,Projected metric coordinates without normalization.,"x,y",False,1,1220.2371867748648,2158.2509089114033,0.5385971078385852
+B_metric_no_norm,Projected metric coordinates without normalization.,"x,y",False,3,1148.0147992241111,1900.5537305202029,0.6435730968007805
+B_metric_no_norm,Projected metric coordinates without normalization.,"x,y",False,5,1136.840128693316,1875.1573789544059,0.6538092612066124
+B_metric_no_norm,Projected metric coordinates without normalization.,"x,y",False,7,1143.4021364240602,1893.5101930720125,0.6472962953637301
+B_metric_no_norm,Projected metric coordinates without normalization.,"x,y",False,9,1151.4916230538488,1892.5088569786508,0.6476842059261395
+B_metric_no_norm,Projected metric coordinates without normalization.,"x,y",False,11,1162.151185320234,1902.6423729078797,0.6438767767700522
+B_metric_no_norm,Projected metric coordinates without normalization.,"x,y",False,15,1174.461870360928,1897.6420541325654,0.6457789791982986
+B_metric_no_norm,Projected metric coordinates without normalization.,"x,y",False,21,1188.1431042450276,1904.448998216271,0.6431692720317601
+C_metric_std,Projected metric coordinates with StandardScaler.,"x,y",True,1,1256.858738849401,2269.4684486147416,0.4907166835791193
+C_metric_std,Projected metric coordinates with StandardScaler.,"x,y",True,3,1153.2380188730456,1922.839756585629,0.6354488805863734
+C_metric_std,Projected metric coordinates with StandardScaler.,"x,y",True,5,1134.0203314023938,1876.4094717285018,0.6533463262763497
+C_metric_std,Projected metric coordinates with StandardScaler.,"x,y",True,7,1148.93077878398,1890.2722119778805,0.6484097821587073
+C_metric_std,Projected metric coordinates with StandardScaler.,"x,y",True,9,1157.3847824667735,1895.1528313802894,0.6466635212443101
+C_metric_std,Projected metric coordinates with StandardScaler.,"x,y",True,11,1165.645137205042,1898.392567762082,0.645489803343651
+C_metric_std,Projected metric coordinates with StandardScaler.,"x,y",True,15,1176.6472792605741,1896.175082308236,0.6463222464417916
+C_metric_std,Projected metric coordinates with StandardScaler.,"x,y",True,21,1194.0431022782338,1908.8472276193468,0.6414644915070709

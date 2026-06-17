@@ -1,0 +1,38 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Municipality of São Paulo"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -46.95,
+              -24.05
+            ],
+            [
+              -46.20,
+              -24.05
+            ],
+            [
+              -46.20,
+              -23.30
+            ],
+            [
+              -46.95,
+              -23.30
+            ],
+            [
+              -46.95,
+              -24.05
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
