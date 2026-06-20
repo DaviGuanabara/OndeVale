@@ -8,17 +8,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
-
 import MapView from "../components/MapView.vue";
 import PredictionPanel from "../components/PredictionPanel.vue";
-import { usePredictionStore } from "../stores/predictionStore";
-
-const predictionStore = usePredictionStore();
-
-onMounted(async () => {
-  await predictionStore.loadDomain();
-});
 </script>
 
 <style scoped>

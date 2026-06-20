@@ -211,13 +211,19 @@ frontend/src/
 ├── views/
 │   └── HomeView.vue
 ├── components/
+│   ├── StartupScreen.vue
 │   ├── MapView.vue
 │   └── PredictionPanel.vue
 ├── services/
-│   └── predictionService.ts
+│   ├── predictionService.ts
+│   └── startupService.ts
 ├── stores/
 │   └── predictionStore.ts
 ```
+
+### `StartupScreen.vue`
+
+Implements the full-screen application startup experience. It blocks the main interface until the frontend, the FastAPI health check, and the operational domain are all ready.
 
 ### `HomeView.vue`
 
@@ -244,6 +250,16 @@ Encapsulates HTTP communication with the backend:
 - `GET /domain`
 - `POST /predict`
 
+### `startupService.ts`
+
+Handles the application startup checks:
+
+- frontend readiness handoff
+- `GET /`
+- `GET /domain`
+- timeout control
+- friendly startup failures
+
 ### `predictionStore.ts`
 
 Stores the frontend state:
@@ -255,6 +271,9 @@ Stores the frontend state:
 - `error`
 - `domain`
 - `insideDomain`
+- `applicationReady`
+- `startupState`
+- `startupError`
 
 ## Backend Architecture
 
@@ -385,6 +404,43 @@ The frontend requests `GET /domain` at startup and then:
 This makes the model limitation explicit instead of silently returning unreliable results.
 
 The backend also depends on `domain.json` and validates prediction requests against it. If the artifact is missing, the backend fails explicitly at startup.
+
+## Application Startup Flow
+
+The deployed frontend does not render the interactive map immediately. Instead, it uses a startup screen that prevents transient backend cold-start states from looking like application failures.
+
+```text
+Frontend
+↓
+Health Check
+↓
+Domain Check
+↓
+Application Ready
+```
+
+### Why this startup flow exists
+
+The backend is hosted on the Render free tier and may enter cold start after inactivity. In that situation, the browser loads the frontend quickly, but the FastAPI service can take several seconds to wake up.
+
+Without an explicit startup flow, the user would briefly see error-like messages such as `Domain Unavailable` or `Load failed`, even though the system is working correctly and only waiting for the backend. The startup screen avoids this misleading state and presents a controlled readiness check instead.
+
+### Startup sequence
+
+The frontend startup screen verifies:
+
+1. Frontend loaded
+2. `GET /`
+3. `GET /domain`
+
+Only after the three steps succeed does the application render:
+
+- the map
+- the side panel
+- the operational domain overlay
+- prediction interactions
+
+If the startup process exceeds the configured timeout, the UI shows a friendly message and offers a `Retry` action.
 
 ## Local Execution
 
