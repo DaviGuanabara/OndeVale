@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: check-env help stats preprocess experiments train report api all clean
+.PHONY: check-env help stats preprocess experiments train report validation api all clean
 
 check-env:
 	@uv --version > /dev/null 2>&1 || (echo "ERROR: uv is not installed. Install it from https://docs.astral.sh/uv/" && exit 1)
@@ -12,6 +12,7 @@ help:
 	@echo "  experiments"
 	@echo "  train"
 	@echo "  report"
+	@echo "  validation"
 	@echo "  api"
 	@echo "  all"
 	@echo "  clean"
@@ -30,6 +31,9 @@ train: experiments
 
 report: train
 	uv run python -m src.report
+
+validation: experiments
+	uv run python -m src.validation
 
 api: check-env
 	uv run uvicorn backend.app:app --reload

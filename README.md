@@ -442,6 +442,29 @@ Only after the three steps succeed does the application render:
 
 If the startup process exceeds the configured timeout, the UI shows a friendly message and offers a `Retry` action.
 
+## Evaluation Artifacts
+
+The project now preserves a dedicated validation layer focused on methodological evidence about stability and variance.
+
+Artifacts generated in `artifacts/validation/` include:
+
+- `fold_metrics.csv`
+- `validation_summary.csv`
+- `mae_boxplot.png`
+- `rmse_boxplot.png`
+- `r2_boxplot.png`
+- `selected_vs_trivial_distributions.png`
+
+The report `artifacts/reports/validation_report.md` complements the baseline report by documenting:
+
+- how cross-validation behaves fold by fold
+- how much the metrics vary
+- how the deployed KNN compares with a trivial baseline
+
+This stage directly supports the Evaluation principle emphasized in the framework:
+
+`Report Model Stability and Performance Variance`
+
 ## Local Execution
 
 ### Backend
@@ -582,6 +605,7 @@ make preprocess
 make experiments
 make train
 make report
+make validation
 ```
 
 The complete pipeline can also be executed with:

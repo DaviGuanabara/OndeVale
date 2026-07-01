@@ -1,45 +1,30 @@
 \documentclass[12pt]{report}
 
-%\usepackage[brazil]{babel} %remover quando for em inglês
-%\usepackage[latin1]{inputenc}  
-
-
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
 
 \usepackage{geometry}
 \usepackage{setspace}
 \usepackage{graphicx}
-
 \usepackage{tabularx}
 \usepackage{array}
-
-
-
-
 \usepackage{svg}
 \usepackage{tikz}
 \usepackage{mathtools}
 \usetikzlibrary{calc,positioning}
 \usetikzlibrary{angles,quotes}
-
 \usepackage{float}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage[table]{xcolor}
-%\usepackage{url}
 \usepackage{hyperref}
 \usepackage{pgf}
-
-
-
-
-
-
+\usepackage{longtable}
+\usepackage{caption}
 
 \usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, shadows.blur}
-    
 
 \svgsetup{inkscapeexe=inkscape}
 
@@ -66,30 +51,23 @@
 \activitynumber{X}
 
 % =========================
-% Cabeçalho bonito
+% Cabeçalho
 % =========================
 
 \newcommand{\makeheader}{
 \noindent
 \begin{center}
-
 \begin{tabular}{m{7cm} m{0.5\textwidth}}
-    % LOGO (centralizada verticalmente)
     \centering
-    \includesvg[width=7cm]{ita-logo}
+    \includesvg[width=7cm]{../logos/ita-logo}
     &
-    % TEXTO (centralizado verticalmente automaticamente)
     \raggedright
     \textbf{Instituto Tecnológico de Aeronáutica} \\
-    %Divisão de Ciência da Computação -- IEC \\
-    PG/EEC-I \\[0.3em]
-    
+    PG/PO \\[0.3em]
     \textbf{\thecourse\ -- \thecoursename} \\
     Professor: \theprofessor \\[0.5em]
-    
     \textbf{\theactivitytype\ \theactivitynumber}
 \end{tabular}
-
 \end{center}
 
 \vspace{1cm}
@@ -102,23 +80,140 @@
 \vspace{0.8cm}
 }
 
-
-
 \begin{document}
 % ===== CONFIG =====
 \student{Davi Guanabara de Aragão}
-\course{CM-204 2026}
-\coursename{Deep Learning}
-\professor{Marcos Máximo}
-\activitytype{Lab}
-\activitynumber{6: Recurrent Neural Networks}
+\course{PO-235 2026}
+\coursename{Projeto de Ciência de Dados}
+\professor{Prof. Dr. Filipe A. N. Verri}
+\activitytype{Relatório}
+\activitynumber{Projeto OndeVale}
 
 % ===== HEADER =====
 \makeheader
 
+\begin{center}
+    {\LARGE \textbf{OndeVale: reconstrução metodológica de um Projeto de Ciência de Dados para estimação espacial de preço por metro quadrado em São Paulo}}\\[1em]
+\end{center}
 
+\begin{abstract}
+Este relatório reconstrói metodologicamente o projeto OndeVale a partir de quatro fontes complementares: a narrativa conceitual dos slides de apresentação, o livro \textit{Data Science Project: An Inductive Learning Approach}, de Filipe A. N. Verri, o código-fonte do repositório e os artefatos gerados pelo pipeline analítico. O problema abordado consiste em estimar o preço por metro quadrado de imóveis no município de São Paulo utilizando exclusivamente a localização geográfica. A análise mostra que o projeto foi estruturado como um sistema completo de ciência de dados, envolvendo caracterização do dataset, construção de um dataset analítico, busca por solução por meio de KNN, avaliação experimental com validação cruzada, treinamento final, disponibilização via backend e frontend e implantação pública. Os artefatos indicam que a solução final implantada foi um \textit{KNeighborsRegressor} uniforme com $k=5$, treinado sobre coordenadas métricas projetadas em EPSG:31983, e selecionado não apenas por desempenho médio, mas também por coerência metodológica com o uso de distâncias métricas. Também são discutidas fragilidades metodológicas observáveis, como o uso do mesmo protocolo de validação para seleção e estimativa de desempenho, a ausência de \textit{nested cross-validation} e o risco de \textit{leakage} espacial. O texto interpreta o OndeVale como um estudo de caso de Projeto de Ciência de Dados no sentido proposto por Verri: não apenas um modelo treinado, mas um produto completo, reprodutível e publicável.
+\end{abstract}
 
+\tableofcontents
+\newpage
 
+\chapter{Introdução}
 
+O mercado imobiliário é fortemente marcado por assimetria informacional. Mesmo quando dois imóveis possuem características físicas semelhantes, pequenas diferenças de localização podem produzir variações relevantes no preço. Em grandes centros urbanos como São Paulo, a localização geográfica funciona como síntese de múltiplos fatores indiretos, como acessibilidade, infraestrutura, centralidade e perfil socioeconômico do entorno. Nesse contexto, a pergunta ``quanto vale o metro quadrado neste ponto da cidade?'' deixa de ser apenas comercial e passa a ser também um problema analítico.
+
+O projeto OndeVale emerge dessa motivação. Seu objetivo é estimar o preço por metro quadrado de imóveis em São Paulo a partir exclusivamente da posição espacial do imóvel, representada por latitude e longitude. O interesse do projeto, contudo, não se limita à produção de um modelo preditivo funcional. Como desenvolvido no âmbito da disciplina PO-235 --- Projeto de Ciência de Dados --- ele também constitui um estudo de caso de construção de um sistema completo de ciência de dados, em que problema, dados, transformações, aprendizado, validação e disponibilização do produto formam um encadeamento metodológico.
+
+O presente relatório não assume a postura de auditoria ou revisão de código. Seu objetivo é reconstruir, a partir dos vestígios materiais disponíveis no repositório, como o projeto provavelmente foi concebido e executado segundo a metodologia proposta por Filipe A. N. Verri em \textit{Data Science Project: An Inductive Learning Approach}. O foco, portanto, está na interpretação do processo e não na atribuição de conformidade ou nota ao projeto.
+
+\chapter{Fundamentação Teórica}
+
+O principal referencial teórico desta reconstrução é o livro \textit{Data Science Project: An Inductive Learning Approach}, de Filipe A. N. Verri. Nesta versão do livro, a paginação não foi confirmada de maneira suficientemente segura para sustentar referências pontuais a páginas específicas; por essa razão, as referências deste relatório priorizam capítulos, seções e princípios do framework.
+
+O Capítulo 3 do livro é particularmente importante porque formula uma visão de Projeto de Ciência de Dados como sistema composto por múltiplos módulos interdependentes. Essa visão é adequada para interpretar o OndeVale porque permite compreender o repositório não como simples coleção de scripts, mas como articulação entre dataset, sistema de busca por solução, avaliação, backend, frontend e infraestrutura de disponibilização.
+
+Na terminologia do framework, o componente \textit{Dataset} corresponde ao conjunto empírico inicial e à sua caracterização. O \textit{Solution Search System} abrange a comparação entre representações dos dados, algoritmos, parâmetros e métricas. \textit{Preprocessing} e \textit{Transformation} dizem respeito às operações que tornam o dado apto ao aprendizado. \textit{Learning} refere-se ao processo de ajuste do modelo. \textit{Prediction} é a capacidade de aplicar a solução a novos casos. \textit{Evaluation} responde por medir qualidade e estabilidade da solução. Por fim, \textit{Backend} e \textit{Frontend} materializam o sistema final em uma interface utilizável.
+
+Além dessa decomposição, o livro enfatiza princípios que ajudam a interpretar os vestígios do projeto. A separação entre scripts de estatística, preprocessamento, experimentação, treinamento e validação sugere o princípio de modularização da solução. A existência de artefatos persistidos e de um \texttt{Makefile} reprodutível se aproxima de \textit{Version Control Everything}. Os relatórios automáticos em Markdown refletem \textit{Reports as Deliverables}. O uso explícito de métricas e critérios quantitativos remete a \textit{Setup Quantitative Goals} e \textit{Measure Exactly What You Want}. Já a análise adicional de estabilidade fold a fold aproxima o projeto de \textit{Report Model Stability and Performance Variance}. Por fim, a implantação pública via backend e frontend em Render sugere preocupação com \textit{Use the Appropriate Infrastructure}.
+
+\chapter{Definição do Problema}
+
+O problema do OndeVale foi formulado como regressão supervisionada. O objetivo não é classificar imóveis nem prever diretamente o preço total do anúncio, mas estimar o valor de referência do metro quadrado. A variável alvo do projeto é definida como
+
+\[
+price\_m2 = \frac{Price}{Size}.
+\]
+
+Essa formulação aparece explicitamente na função \texttt{build\_target} de \texttt{src/preprocess.py}, o que constitui evidência direta de que \texttt{price\_m2} foi tratado como variável resposta e não como atributo de entrada.
+
+Do ponto de vista metodológico, a escolha de preço por metro quadrado é coerente com a natureza da pergunta prática que o projeto procura responder. Em vez de tentar prever preços totais, que combinam efeitos de localização e escala física do imóvel, o projeto busca estimar uma grandeza comparativa mais estável e mais útil para usuários finais. Em termos supervisionados, o problema pode ser resumido como a aprendizagem de uma função que mapeia coordenadas espaciais em uma estimativa de \texttt{price\_m2}.
+
+\chapter{Dataset e Caracterização dos Dados}
+
+O dataset bruto utilizado pelo projeto encontra-se em \texttt{dataset/DatasetSaoPaulo.csv} e contém 13.640 observações distribuídas em 16 colunas. Segundo o relatório gerado por \texttt{src/stats.py}, as colunas incluem atributos como \texttt{Price}, \texttt{Size}, \texttt{Rooms}, \texttt{District}, \texttt{Negotiation Type}, \texttt{Latitude} e \texttt{Longitude}. A caracterização do dataset foi registrada em \texttt{artifacts/stats/stats\_report.md}, o que sugere que o projeto reservou uma etapa explícita para compreensão descritiva dos dados antes da modelagem.
+
+A análise inicial identificou 7.228 imóveis de aluguel e 6.412 imóveis de venda. Também registrou 881 ocorrências de coordenadas iguais a $(0,0)$ no dataset geral, 319 linhas duplicadas e ausência de preços ou áreas negativos ou nulos. Esses achados são relevantes porque justificam decisões metodológicas posteriores de filtragem e limpeza. Em termos do framework do livro, eles mostram que a fase de entendimento e manuseio dos dados não foi tratada como detalhe operacional, mas como parte integrante da construção da solução.
+
+Outro aspecto importante da caracterização é a produção de artefatos visuais e estatísticos, como histogramas, boxplots e sumários de valores ausentes. Isso sugere que o projeto não produziu apenas código ou modelos, mas também documentação interpretável do estado do dataset, fortalecendo a dimensão de reprodutibilidade e comunicação do processo.
+
+\chapter{Construção do Dataset Analítico}
+
+A partir dos artefatos do repositório, a construção do dataset analítico pode ser reconstruída como uma sequência composta por \textit{data handling}, \textit{target definition} e \textit{transformation}. Essa decomposição é compatível com o vocabulário do livro, especialmente no que diz respeito ao Capítulo 5, em que operações como \textit{filtering} e \textit{mutating} são centrais para transformar dados brutos em dados adequados ao aprendizado.
+
+Em \texttt{src/preprocess.py}, o primeiro passo é o filtro de escopo: apenas registros com \texttt{Negotiation Type == "sale"} são mantidos. Essa decisão reduz o conjunto de 13.640 para 6.412 observações e torna explícita a delimitação do fenômeno a ser estudado. Em seguida, ocorre a remoção de observações com valores ausentes nas colunas \texttt{Price}, \texttt{Size}, \texttt{Latitude} e \texttt{Longitude}. Os metadados em \texttt{artifacts/data/preprocess\_metadata.json} mostram que essa etapa não reduziu o subconjunto de venda. A terceira operação remove coordenadas inválidas, especificamente latitudes ou longitudes iguais a zero, reduzindo o conjunto de modelagem para 6.014 observações e eliminando 398 registros inválidos após o filtro de escopo.
+
+Na sequência, o alvo \texttt{price\_m2} é criado por meio da razão entre preço e tamanho do imóvel. Por fim, as coordenadas geográficas são projetadas de \texttt{EPSG:4326} para \texttt{EPSG:31983}. Essa transformação é metodologicamente decisiva porque o algoritmo de aprendizado escolhido depende de distância entre observações, e latitude/longitude em graus não constituem uma métrica espacial adequada para tal operação. O resultado final é um dataset analítico que pode ser expresso como:
+
+\[
+X = (x,y), \qquad y = price\_m2.
+\]
+
+\chapter{Sistema de Busca por Solução}
+
+Os artefatos observáveis mostram que a busca por solução no OndeVale não consistiu apenas em escolher um algoritmo. Ela envolveu, de forma explícita, a comparação entre diferentes representações espaciais e diferentes valores do hiperparâmetro $k$. Essa configuração é compatível com a ideia de \textit{Solution Search System} presente no framework de Verri, segundo a qual a solução de um problema de ciência de dados emerge da articulação entre dados, transformações, algoritmo, parâmetros e critérios de avaliação.
+
+A hipótese substantiva do projeto pode ser resumida da seguinte forma: imóveis espacialmente próximos tendem a apresentar valores semelhantes por metro quadrado. Essa hipótese fundamenta a escolha do \textit{K-Nearest Neighbors Regressor} como baseline. Em \texttt{src/experiments.py} e \texttt{src/train.py}, o modelo é instanciado apenas com \texttt{n\_neighbors = k}, sem parâmetro \texttt{weights}; portanto, o KNN empregado no projeto é uniforme, e não ponderado por distância.
+
+Três experimentos foram definidos em \texttt{src/config.py}. O experimento \texttt{A\_raw\_no\_norm} usa longitude e latitude brutas sem normalização. O experimento \texttt{B\_metric\_no\_norm} usa coordenadas projetadas \texttt{x} e \texttt{y} sem normalização. O experimento \texttt{C\_metric\_std} usa as mesmas coordenadas projetadas, mas com \texttt{StandardScaler}. Para cada experimento, foi avaliada a grade
+
+\[
+k \in \{1, 3, 5, 7, 9, 11, 15, 21\}.
+\]
+
+A avaliação foi conduzida por meio de \texttt{KFold(n\_splits=5, shuffle=True, random\_state=42)}. Para cada valor de $k$, foi executada uma validação cruzada completa com cinco folds, registrando \texttt{MAE}, \texttt{RMSE} e \texttt{R\textsuperscript{2}}. Isso significa que a busca por $k$ não foi manual nem impressionística; ela foi conduzida sob um protocolo experimental explícito e reprodutível.
+
+\chapter{Avaliação Experimental}
+
+Os resultados centrais do sistema de busca por solução estão registrados em \texttt{artifacts/experiments/knn\_cv\_results.csv} e resumidos em \texttt{artifacts/reports/baseline\_report.md}. As métricas utilizadas foram erro absoluto médio (\texttt{MAE}), raiz do erro quadrático médio (\texttt{RMSE}) e coeficiente de determinação (\texttt{R\textsuperscript{2}}). A regra de seleção observada em \texttt{src/experiments.py} foi lexicográfica: primeiro menor \texttt{RMSE} médio, depois menor \texttt{MAE} médio e, em caso de novo empate, maior \texttt{R\textsuperscript{2}} médio.
+
+Esse detalhe é particularmente importante porque impede reconstruções incorretas segundo as quais o valor de $k$ teria sido escolhido unicamente com base em \texttt{MAE}. Os artefatos mostram que o melhor resultado global foi \texttt{A\_raw\_no\_norm\_k5}, com \texttt{MAE = 1133,52}, \texttt{RMSE = 1874,44} e \texttt{R\textsuperscript{2} = 0,6540}. Entretanto, o modelo baseline final selecionado para implantação foi \texttt{B\_metric\_no\_norm\_k5}, com \texttt{MAE = 1136,84}, \texttt{RMSE = 1875,16} e \texttt{R\textsuperscript{2} = 0,6538}.
+
+A distinção entre \texttt{overall\_best} e \texttt{selected\_baseline\_model} aparece explicitamente em \texttt{artifacts/experiments/best\_models.json}. O próprio artefato documenta a justificativa: o modelo final deveria utilizar coordenadas métricas $[x,y]$. Em outras palavras, ainda que o experimento com coordenadas brutas tenha apresentado a melhor combinação global de métricas, a solução implantada foi escolhida entre os experimentos compatíveis com a noção de distância métrica.
+
+O relatório \texttt{artifacts/reports/validation\_report.md} reforça a etapa de avaliação ao preservar métricas fold a fold e compará-las com uma baseline trivial que prevê a média de \texttt{price\_m2} do fold de treino. Nesse relatório, a solução implantada \texttt{B\_metric\_no\_norm\_k5} apresenta \texttt{MAE médio = 1136,84}, \texttt{RMSE médio = 1875,16} e \texttt{R\textsuperscript{2} médio = 0,6538}, com desvios-padrão respectivos de \texttt{26,49}, \texttt{164,49} e \texttt{0,0210}. A baseline trivial apresenta \texttt{MAE médio = 2288,03}, \texttt{RMSE médio = 3185,93} e \texttt{R\textsuperscript{2} médio = -0,0008}. A diferença entre os dois cenários sugere ganho substancial do modelo implantado sobre uma referência ingênua, além de permitir discutir estabilidade e dispersão do desempenho entre folds.
+
+\chapter{Produto Final e Arquitetura do Sistema}
+
+Uma das evidências mais fortes de aderência ao espírito do framework de Verri é a transformação do artefato experimental em sistema utilizável. Em \texttt{src/train.py}, o projeto lê a seleção registrada em \texttt{best\_models.json}, reconstrói o pipeline correspondente e treina o modelo final sobre as 6.014 observações processadas. O resultado é persistido em \texttt{artifacts/models/knn\_price\_m2\_baseline.joblib}, acompanhado de metadados em \texttt{artifacts/models/knn\_price\_m2\_baseline.json}.
+
+Esse modelo é então integrado a um backend em FastAPI, responsável por receber latitude e longitude, aplicar a mesma transformação espacial usada no treinamento e retornar a estimativa de preço por metro quadrado. No frontend, uma interface em Vue e mapa interativo permite ao usuário selecionar pontos geográficos diretamente. O deploy em Render completa a transição entre experimento e produto final.
+
+Essa arquitetura é metodologicamente relevante porque confirma que o projeto não foi encerrado na etapa de aprendizado. Em vez disso, os artefatos mostram a intenção de disponibilizar a solução de forma operacional, pública e interativa. Isso é plenamente compatível com a visão do livro, segundo a qual o resultado de um Projeto de Ciência de Dados é um sistema completo e não apenas um modelo ajustado.
+
+\chapter{Discussão Metodológica}
+
+A partir dos vestígios materiais do repositório, a história provável do OndeVale pode ser reconstruída como uma cadeia metodológica coerente. Primeiro, formulou-se um problema prático: estimar o valor de referência do metro quadrado em função da localização. Em seguida, caracterizou-se o dataset e delimitou-se o escopo aos imóveis de venda. Depois construiu-se um dataset analítico com alvo explícito e representação espacial projetada. Na sequência, organizou-se um sistema de busca por solução baseado em KNN, comparação entre representações e busca de hiperparâmetro. Em seguida, avaliou-se a solução por validação cruzada. Por fim, treinou-se o modelo final, disponibilizou-se a inferência via API, construiu-se a interface cartográfica e implantou-se o sistema publicamente.
+
+Esse percurso é compatível com a formulação do livro de Verri. Os scripts separados, os artefatos persistidos e os relatórios automáticos funcionam como vestígios de uma preocupação explícita com reprodutibilidade, modularização e documentação do processo. Ao mesmo tempo, o repositório sugere que a etapa de avaliação foi se tornando mais sofisticada ao longo do desenvolvimento, em especial com a adição posterior de análise de estabilidade e comparação com baseline trivial.
+
+\chapter{Limitações e Fragilidades Metodológicas}
+
+Embora o projeto apresente um encadeamento metodológico plausível e bem documentado, algumas fragilidades são observáveis. A primeira delas é o uso do mesmo protocolo de validação cruzada tanto para comparar candidatos quanto para relatar o desempenho da solução selecionada. Na ausência de \textit{nested cross-validation} ou de um conjunto de teste externo, a estimativa final pode ser levemente otimista.
+
+A segunda fragilidade decorre da natureza espacial do problema. O uso de \texttt{KFold} aleatório em um cenário geográfico introduz risco de \textit{leakage} espacial, uma vez que observações próximas podem ser separadas entre treino e teste em folds diferentes. Como o KNN depende diretamente de vizinhança espacial, essa escolha pode produzir uma avaliação mais favorável do que a obtida por estratégias de validação espacialmente bloqueadas.
+
+Uma terceira limitação está na distância entre teoria ideal e prática observada. O framework do livro enfatiza avaliação robusta, modularização e explicitação do processo. O repositório sugere que o projeto perseguiu essa direção, mas também que parte da sofisticação avaliativa, especialmente a análise de estabilidade, pode ter sido incorporada posteriormente como fortalecimento metodológico do material final.
+
+Essas limitações, contudo, não anulam o valor do projeto. Pelo contrário, ajudam a situá-lo como caso realista de desenvolvimento de um Projeto de Ciência de Dados, no qual decisões metodológicas, restrições práticas e maturação incremental convivem ao longo do processo.
+
+\chapter{Conclusão}
+
+Este relatório reconstruiu o projeto OndeVale como estudo de caso de Projeto de Ciência de Dados orientado por uma hipótese espacial simples e transformado em produto funcional. Os artefatos analisados mostram que o projeto foi além da criação de um modelo treinado. Ele articulou caracterização do dataset, definição explícita do alvo, transformação de representação espacial, busca sistemática por solução, avaliação com validação cruzada, treinamento final e implantação em sistema web publicamente acessível.
+
+A principal contribuição metodológica observável está na coerência entre a pergunta substantiva do projeto e a estrutura de solução adotada. Ao limitar a entrada do modelo à localização geográfica, o OndeVale torna explícita a pergunta central: quanto do preço por metro quadrado pode ser capturado apenas pela dimensão espacial? A resposta encontrada é suficiente para justificar o sistema como baseline metodológico simples, reprodutível e comunicável.
+
+Ao mesmo tempo, as limitações observadas --- especialmente no que se refere à estratégia de validação --- mostram que a reconstrução metodológica deve permanecer intelectualmente honesta. O OndeVale não precisa ser entendido como solução metodologicamente perfeita para ser reconhecido como caso relevante de Projeto de Ciência de Dados. Seu valor está precisamente em evidenciar como teoria, dados, aprendizado, avaliação e software podem ser articulados em torno de um problema real e publicamente demonstrável.
+
+\chapter{Referências}
+
+\begin{itemize}
+    \item VERRI, Filipe A. N. \textit{Data Science Project: An Inductive Learning Approach}. Version v0.1.0, 2024. DOI: \url{10.5281/zenodo.14498011}.
+    \item ONDEVALE. Repositório local do projeto. Arquivos consultados: \texttt{src/preprocess.py}, \texttt{src/experiments.py}, \texttt{src/train.py}, \texttt{src/validation.py}, \texttt{artifacts/reports/baseline\_report.md}, \texttt{artifacts/reports/validation\_report.md}, \texttt{artifacts/stats/stats\_report.md}, \texttt{artifacts/experiments/best\_models.json}, \texttt{artifacts/models/knn\_price\_m2\_baseline.json}.
+\end{itemize}
 
 \end{document}

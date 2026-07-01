@@ -187,3 +187,25 @@ frontend/dist/
 # macOS
 .DS_Store
 .python-version
+report/report_OndeVale.out
+report/report_OndeVale.aux
+artifacts/validation/validation_summary.csv
+artifacts/validation/validation_metadata.json
+artifacts/validation/selected_vs_trivial_distributions.png
+artifacts/validation/rmse_boxplot.png
+artifacts/validation/r2_boxplot.png
+artifacts/validation/mae_boxplot.png
+artifacts/validation/fold_metrics.csv
+artifacts/reports/validation_report.md
+report/report_OndeVale.aux
+report/report_OndeVale.out
+report/report_OndeVale.pdf
+report/report_OndeVale.synctex.gz
+report/report_OndeVale.tex
+report/report_OndeVale.toc
+report/report_OndeVale.aux
+report/report_OndeVale.out
+report/report_OndeVale.pdf
+report/report_OndeVale.synctex.gz
+report/report_OndeVale.tex
+/report
